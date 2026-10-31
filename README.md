@@ -103,8 +103,8 @@ To move domains, change the Caddy hostname, `DJANGO_ALLOWED_HOSTS`,
 `DJANGO_CSRF_TRUSTED_ORIGINS`, and the healthcheck Host; redirect the old hostname.
 Content remains in the same volume.
 
-## License
+## Content rights
 
-Application code is MIT licensed. The maker's photographs, doll designs, and personal
-content are not licensed by this repository's software license. Production media and
+The maker's photographs, doll designs, and personal content are excluded from the
+[MIT license](LICENSE) covering the application code. Production media and
 database files are ignored by Git; obtain permission before redistributing photographs.
