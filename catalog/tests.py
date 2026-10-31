@@ -54,15 +54,23 @@ class WorkshopTests(TestCase):
         self.assertNotContains(response, "Черновик")
         self.assertEqual(self.client.get(self.draft.get_absolute_url()).status_code, 404)
 
-    def test_draft_and_unpublished_photos_are_not_public(self):
+    def test_photos_are_cacheable_and_accessible_by_direct_url(self):
         response = self.client.get(self.photo.image.url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "image/webp")
+        self.assertEqual(response["Cache-Control"], "public, max-age=31536000, immutable")
         response.close()
-        self.assertEqual(self.client.get(self.draft_photo.image.url).status_code, 404)
+        response = self.client.get(self.draft_photo.image.url)
+        self.assertEqual(response.status_code, 200)
+        response.close()
         self.published.is_published = False
         self.published.save()
-        self.assertEqual(self.client.get(self.photo.image.url).status_code, 404)
+        response = self.client.get(self.photo.image.url)
+        self.assertEqual(response.status_code, 200)
+        response.close()
+        self.assertEqual(self.client.get(self.published.get_absolute_url()).status_code, 404)
+        self.assertNotContains(self.client.get(reverse("catalog")), self.published.title)
+        self.assertEqual(self.client.get("/media/dolls/" + "0" * 32 + ".webp").status_code, 404)
         self.assertEqual(self.client.get("/media/dolls/../../config/settings.py").status_code, 404)
 
     def test_filter_and_invalid_filter(self):
@@ -161,7 +169,9 @@ class WorkshopTests(TestCase):
         response = self.client.get(reverse("admin:catalog_doll_photo", args=[self.draft_photo.pk]))
         self.assertEqual(response.status_code, 200)
         response.close()
-        self.assertEqual(self.client.get(self.draft_photo.image.url).status_code, 404)
+        response = self.client.get(self.draft_photo.image.url)
+        self.assertEqual(response.status_code, 200)
+        response.close()
 
     def test_anonymous_admin_access_redirects_to_login(self):
         response = self.client.get(reverse("admin:catalog_doll_changelist"))

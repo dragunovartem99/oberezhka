@@ -62,9 +62,8 @@ def photo(request, filename):
     image = get_object_or_404(
         DollPhoto,
         image=f"dolls/{filename}",
-        doll__is_published=True,
     )
     response = FileResponse(image.image.open("rb"), content_type="image/webp")
-    # Revalidate on every visit: unpublishing an item also hides its photographs.
-    response["Cache-Control"] = "no-cache"
+    # Uploads receive a new UUID filename, so an existing URL never changes content.
+    response["Cache-Control"] = "public, max-age=31536000, immutable"
     return response
