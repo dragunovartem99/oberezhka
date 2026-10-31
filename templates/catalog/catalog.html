@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Куклы · {{ workshop.name }}{% endblock %}
+{% block content %}<section class="shell page-section">
+  <p class="eyebrow">Коллекция мастерской</p><h1 class="page-title">Куклы с <em>характером</em></h1>
+  <p class="page-intro">Рассмотрите детали. Найдите ту, что отзывается именно вам.</p>
+  <nav class="filters" aria-label="Наличие изделий">
+    <a href="{% url 'catalog' %}" {% if not status %}aria-current="true"{% endif %}>Все работы</a>
+    {% for value,label in statuses %}<a href="?status={{ value }}" {% if status == value %}aria-current="true"{% endif %}>{{ label }}</a>{% endfor %}
+  </nav>
+  <div class="doll-grid">{% for item in page_obj %}{% include 'catalog/card.html' %}{% empty %}<p class="empty-state">В этом разделе пока нет работ. <a href="{% url 'catalog' %}">Посмотреть все куклы →</a></p>{% endfor %}</div>
+  {% if page_obj.has_other_pages %}<nav class="pagination" aria-label="Страницы каталога">{% if page_obj.has_previous %}<a href="?status={{ status }}&amp;page={{ page_obj.previous_page_number }}">← Назад</a>{% endif %}<span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?status={{ status }}&amp;page={{ page_obj.next_page_number }}">Дальше →</a>{% endif %}</nav>{% endif %}
+</section>{% endblock %}

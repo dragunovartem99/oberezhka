@@ -1,0 +1,8 @@
+<article class="doll-card">
+  <a class="card-photo" href="{{ item.get_absolute_url }}" aria-label="Рассмотреть: {{ item.title }}">
+    {% with cover=item.cover %}{% if cover %}<img src="{{ cover.image.url }}" alt="{{ cover.alt|default:item.title }}" loading="lazy" width="600" height="700">{% else %}<span class="photo-placeholder" aria-hidden="true">✳</span>{% endif %}{% endwith %}
+    <span class="availability {{ item.availability }}">{{ item.get_availability_display }}</span>
+  </a>
+  <div class="card-line"><h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h3><span aria-hidden="true">↗</span></div>
+  {% if item.price != None %}<p class="price">{{ item.price|floatformat:"-2" }} ₽</p>{% endif %}
+</article>

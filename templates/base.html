@@ -1,0 +1,32 @@
+{% load static %}<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#30483b">
+  <title>{% block title %}{{ workshop.name }} · Куклы ручной работы{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ workshop.introduction|truncatechars:160 }}{% endblock %}">
+  <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#main">К содержимому</a>
+  <header class="site-header shell">
+    <a class="brand" href="{% url 'home' %}" aria-label="{{ workshop.name }} — главная">
+      <span class="brand-mark" aria-hidden="true">✳</span>
+      <span>{{ workshop.name }}<small>куклы ручной работы</small></span>
+    </a>
+    <nav aria-label="Основная навигация">
+      <a href="{% url 'catalog' %}" {% if request.resolver_match.url_name == 'catalog' or request.resolver_match.url_name == 'doll' %}aria-current="page"{% endif %}>Куклы</a>
+      <a href="{% url 'about' %}" {% if request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>О мастерской</a>
+      <a class="nav-order" href="{% url 'ordering' %}" {% if request.resolver_match.url_name == 'ordering' %}aria-current="page"{% endif %}>Как заказать <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+  <main id="main">{% block content %}{% endblock %}</main>
+  <footer class="site-footer shell">
+    <div><a class="footer-brand" href="{% url 'home' %}">{{ workshop.name }}</a><p>Ткань. Нити. Тепло рук.</p></div>
+    <nav aria-label="Навигация в подвале"><a href="{% url 'catalog' %}">Все куклы</a><a href="{% url 'ordering' %}">Связаться</a></nav>
+    <span class="footer-flower" aria-hidden="true">✳</span>
+  </footer>
+</body>
+</html>

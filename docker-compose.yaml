@@ -1,0 +1,28 @@
+services:
+  oberezhka:
+    build: .
+    image: oberezhka
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      DJANGO_DEBUG: "0"
+    ports:
+      - "127.0.0.1:50004:50004"
+    volumes:
+      - oberezhka-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; r=urllib.request.Request('http://127.0.0.1:50004/', headers={'Host':'oberezhka.dragunov.dev','X-Forwarded-Proto':'https'}); urllib.request.urlopen(r, timeout=5)",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  oberezhka-data:

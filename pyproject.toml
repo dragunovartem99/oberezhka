@@ -1,0 +1,15 @@
+[project]
+name = "oberezhka"
+version = "0.1.0"
+description = "A small handmade doll showcase with a Russian Django admin"
+requires-python = ">=3.13"
+dependencies = ["Django>=5.2,<5.3", "Pillow>=11.3", "gunicorn>=23", "whitenoise>=6.9"]
+
+[dependency-groups]
+dev = ["ruff>=0.12"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

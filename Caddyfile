@@ -1,0 +1,9 @@
+oberezhka.dragunov.dev {
+    encode zstd gzip
+    request_body {
+        max_size 64MB
+    }
+    @admin path /admin /admin/*
+    header @admin Cache-Control "no-store"
+    reverse_proxy localhost:50004
+}

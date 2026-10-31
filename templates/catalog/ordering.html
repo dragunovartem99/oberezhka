@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block title %}Как заказать · {{ workshop.name }}{% endblock %}
+{% block content %}<section class="shell page-section editorial"><p class="eyebrow">От знакомства — к разговору</p><h1 class="page-title">Нашли свою куклу?<br><em>Давайте знакомиться.</em></h1><div class="editorial-body"><span class="editorial-symbol" aria-hidden="true">✳</span><div class="prose">{{ workshop.ordering|linebreaks }}
+{% if workshop.contact_url %}<p><a class="button" href="{{ workshop.contact_url }}" target="_blank" rel="noopener noreferrer">{{ workshop.contact_label }} ↗</a></p>{% endif %}
+{% if workshop.email %}<p><a class="text-link" href="mailto:{{ workshop.email }}">{{ workshop.email }}</a></p>{% endif %}
+{% if not workshop.contact_url and not workshop.email %}<p class="contact-pending">Контакты мастерской скоро появятся здесь.</p>{% endif %}
+<div class="ordering-note"><h2>Перед тем как написать</h2><p>Запомните название понравившейся куклы. Наличие, возможность повторения, стоимость и доставку можно уточнить в разговоре.</p></div></div></div></section>{% endblock %}
