@@ -390,12 +390,7 @@
     text-transform: uppercase;
     color: var(--green);
   }
-  .story-heading {
-    position: relative;
-  }
   .story-heading .eyebrow {
-    position: absolute;
-    bottom: 100%;
     margin-bottom: 18px;
     color: var(--straw);
   }
@@ -783,9 +778,6 @@
     .story-inner {
       grid-template-columns: 1fr;
       gap: 24px;
-    }
-    .story-heading .eyebrow {
-      position: static;
     }
     .story-inner h2 {
       font-size: 36px;
