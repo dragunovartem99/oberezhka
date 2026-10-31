@@ -40,7 +40,8 @@ ordering details, and actual contact link/email. No contact details are fabricat
 - Add photographs inside the item form. The lowest position is the cover.
 - JPEG, PNG, and WebP uploads are limited to 12 MB and 24 megapixels each; stored images
   are resized to at most 1800 px, converted to WebP, and stripped of EXIF metadata.
-- Public pages and image routes hide drafts. Authenticated admin previews also work for drafts.
+- Public pages hide drafts. Photos remain accessible through direct URLs, including draft
+  and unpublished photos, and browsers can cache them for a year.
 - Optional prices are in rubles. Stock state, materials, dimensions, and descriptions are editable.
 - Images removed from records stay on disk deliberately; automatic deletion can break rollback.
   Reclaim orphaned files manually only after a backup.
@@ -52,7 +53,7 @@ make check
 DJANGO_DEBUG=1 uv run python manage.py makemigrations --check --dry-run
 ```
 
-Tests cover draft visibility (including images), filtering, pagination, uploads,
+Tests cover draft page visibility, direct image access and caching, filtering, pagination, uploads,
 contact escaping, admin editing, and editor permissions. CI also checks production settings.
 
 ## VPS deployment
@@ -74,8 +75,8 @@ bash deploy.sh
 Run `python -c 'import secrets; print(secrets.token_urlsafe(64))'` locally to generate
 a secret, then put it in `.env`. Caddy proxies to the loopback-only app port and
 provides HTTPS. WhiteNoise serves collected static assets; Django streams the normalized
-photos after checking publication state. This keeps draft media private without a second
-file server. For a small catalogue this is sufficient; consider a separate image service
+photos with a one-year public cache lifetime. Each upload gets a new UUID URL, so replacing
+a photo does not reuse a cached image. For a small catalogue this is sufficient; consider a separate image service
 or object storage if image traffic grows.
 
 Photo sources must be copied to the VPS explicitly before import, for example to a
