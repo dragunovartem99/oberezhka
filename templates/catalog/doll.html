@@ -9,7 +9,7 @@
     {% if doll.price != None %}<p class="product-price">{{ doll.price|floatformat:"-2" }} ₽</p>{% endif %}
     {% if doll.description %}<div class="prose">{{ doll.description|linebreaks }}</div>{% endif %}
     {% if doll.materials or doll.dimensions %}<dl class="details">{% if doll.materials %}<div><dt>Материалы</dt><dd>{{ doll.materials }}</dd></div>{% endif %}{% if doll.dimensions %}<div><dt>Размеры</dt><dd>{{ doll.dimensions }}</dd></div>{% endif %}</dl>{% endif %}
-    <a class="button" href="{% url 'ordering' %}">Спросить об этой кукле <span aria-hidden="true">↗</span></a><p class="small-note">Назовите мастерице эту работу: «{{ doll.title }}».</p>
+    <div class="product-contact"><a class="button" href="{% url 'ordering' %}">Спросить об этой кукле <span aria-hidden="true">↗</span></a><p class="small-note">Назовите мастерице эту работу: «{{ doll.title }}».</p></div>
   </div>
 </div></section>
 {% if related %}<section class="shell section-space"><div class="section-heading"><h2>Ещё немного тепла</h2><a class="text-link" href="{% url 'catalog' %}">Вся коллекция ↗</a></div><div class="doll-grid related">{% for item in related %}{% include 'catalog/card.html' %}{% endfor %}</div></section>{% endif %}
