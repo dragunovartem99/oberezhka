@@ -76,7 +76,8 @@ Run `python -c 'import secrets; print(secrets.token_urlsafe(64))'` locally to ge
 a secret, then put it in `.env`. Caddy proxies to the loopback-only app port and
 provides HTTPS. WhiteNoise serves collected static assets; Django streams the normalized
 photos with a one-year public cache lifetime. Each upload gets a new UUID URL, so replacing
-a photo does not reuse a cached image. For a small catalogue this is sufficient; consider a separate image service
+a photo does not reuse a cached image. For a small catalogue this is sufficient; consider a
+separate image service
 or object storage if image traffic grows.
 
 Photo sources must be copied to the VPS explicitly before import, for example to a

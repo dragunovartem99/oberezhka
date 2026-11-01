@@ -59,10 +59,7 @@ def ordering(request):
 
 @require_safe
 def photo(request, filename):
-    image = get_object_or_404(
-        DollPhoto,
-        image=f"dolls/{filename}",
-    )
+    image = get_object_or_404(DollPhoto, image=f"dolls/{filename}")
     response = FileResponse(image.image.open("rb"), content_type="image/webp")
     # Uploads receive a new UUID filename, so an existing URL never changes content.
     response["Cache-Control"] = "public, max-age=31536000, immutable"

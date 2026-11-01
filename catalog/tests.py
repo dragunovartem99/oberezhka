@@ -54,24 +54,63 @@ class WorkshopTests(TestCase):
         self.assertNotContains(response, "Черновик")
         self.assertEqual(self.client.get(self.draft.get_absolute_url()).status_code, 404)
 
-    def test_photos_are_cacheable_and_accessible_by_direct_url(self):
-        response = self.client.get(self.photo.image.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "image/webp")
-        self.assertEqual(response["Cache-Control"], "public, max-age=31536000, immutable")
-        response.close()
-        response = self.client.get(self.draft_photo.image.url)
-        self.assertEqual(response.status_code, 200)
-        response.close()
+    def test_photos_are_public_and_cacheable_regardless_of_publication(self):
+        for photo in (self.photo, self.draft_photo):
+            with self.subTest(published=photo.doll.is_published):
+                response = self.client.get(photo.image.url)
+                self.addCleanup(response.close)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response["Content-Type"], "image/webp")
+                self.assertEqual(response["Cache-Control"], "public, max-age=31536000, immutable")
+                with photo.image.open("rb") as stored:
+                    self.assertEqual(b"".join(response.streaming_content), stored.read())
+
+    def test_unpublishing_a_doll_keeps_its_photo_accessible(self):
         self.published.is_published = False
         self.published.save()
+
         response = self.client.get(self.photo.image.url)
+        self.addCleanup(response.close)
+
         self.assertEqual(response.status_code, 200)
-        response.close()
-        self.assertEqual(self.client.get(self.published.get_absolute_url()).status_code, 404)
-        self.assertNotContains(self.client.get(reverse("catalog")), self.published.title)
-        self.assertEqual(self.client.get("/media/dolls/" + "0" * 32 + ".webp").status_code, 404)
-        self.assertEqual(self.client.get("/media/dolls/../../config/settings.py").status_code, 404)
+        self.assertEqual(response["Cache-Control"], "public, max-age=31536000, immutable")
+
+    def test_unpublished_doll_is_hidden_from_public_pages(self):
+        self.published.is_published = False
+        self.published.save()
+
+        response = self.client.get(self.published.get_absolute_url())
+
+        self.assertEqual(response.status_code, 404)
+        for name in ("home", "catalog"):
+            with self.subTest(page=name):
+                self.assertNotContains(self.client.get(reverse(name)), self.published.title)
+
+    def test_missing_or_invalid_photo_urls_return_not_found(self):
+        urls = (
+            "/media/dolls/" + "0" * 32 + ".webp",
+            "/media/dolls/../../config/settings.py",
+        )
+        for url in urls:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+
+                self.assertEqual(response.status_code, 404)
+
+    def test_replacing_a_photo_changes_its_public_url(self):
+        old_url = self.photo.image.url
+        self.photo.image = upload(name="replacement.png", size=(140, 90))
+
+        self.photo.save()
+        self.photo.refresh_from_db()
+        response = self.client.get(self.photo.image.url)
+        self.addCleanup(response.close)
+
+        self.assertNotEqual(self.photo.image.url, old_url)
+        self.assertEqual(response.status_code, 200)
+        with Image.open(BytesIO(b"".join(response.streaming_content))) as image:
+            self.assertEqual(image.size, (140, 90))
 
     def test_filter_and_invalid_filter(self):
         available = Doll.objects.create(
@@ -167,9 +206,6 @@ class WorkshopTests(TestCase):
         response = self.client.get(reverse("admin:catalog_doll_change", args=[self.draft.pk]))
         self.assertContains(response, "Черновик")
         response = self.client.get(reverse("admin:catalog_doll_photo", args=[self.draft_photo.pk]))
-        self.assertEqual(response.status_code, 200)
-        response.close()
-        response = self.client.get(self.draft_photo.image.url)
         self.assertEqual(response.status_code, 200)
         response.close()
 
